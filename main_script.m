@@ -120,3 +120,5 @@ r_opt = inv(Q_final)*(Xtilde_final'-V_final'*xPrime);
 %% Plotting target trajectory, state trajectory and references
 timespan = linspace(0,T,100);
 plot(timespan,yTilde(timespan));
+hold on
+stairs(tK(1:end-1),r_opt);
