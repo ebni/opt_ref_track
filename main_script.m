@@ -30,7 +30,8 @@ xPrime = [0; 0]; % initial state sampled at tK(kPrime)
 beta = 1;
 
 % trajectory to be followed
-yTilde = @(t) sin(t).*exp(-2*t);
+%yTilde = @(t) sin(t).*exp(-2*t);
+yTilde = @(t) t.*t.*exp(-2*t);
 beta = 2; % discout factor of future costs
 fprintf("Initial output gap: %f\n", C*xPrime-yTilde(tK(kPrime)));
 
@@ -117,8 +118,24 @@ end
 
 r_opt = inv(Q_final)*(Xtilde_final'-V_final'*xPrime);
 
-%% Plotting target trajectory, state trajectory and references
+%% Plotting target trajectory, references, and state trajectory
 timespan = linspace(0,T,100);
-plot(timespan,yTilde(timespan));
+plot(timespan,yTilde(timespan),'b');  % target traj
 hold on
-stairs(tK(1:end-1),r_opt);
+stairs(tK,[r_opt' r_opt(end)],'r');   % refs
+
+%state trajectory
+xK = zeros(n,N+1);  % sampled state
+xK(:,1) = xPrime;
+for k=1:N
+	xK(:,k+1) = Phi(tauK(k))*xK(:,k)+Gamma(tauK(k))*r_opt(k);
+	timespan = linspace(tK(k),tK(k+1),ceil(tauK(k)/T*100+2));
+	yspan = timespan;    % init to something of appropriate size
+	for i=1:length(timespan)
+		yspan(i) = C*(Phi(timespan(i)-timespan(1))*xK(:,k)+Gamma(timespan(i)-timespan(1))*r_opt(k));
+	end
+	plot(timespan,yspan,'k-');
+end
+plot(tK,C*xK,'ko'); % plotting sampled states
+
+hold off
