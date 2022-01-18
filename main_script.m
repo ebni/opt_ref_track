@@ -21,18 +21,20 @@ C = [1 0];  % first state is output to be tracked
 % C and A should have sizes n\times n, and m\times n
 
 % Sampling
-N = 15;  % number of intervals
+N = 10;  % number of intervals
 T = 3;   % time horizon
 tK = linspace(0,T,N+1);  % periodic sampling
 tauK = diff(tK);
 kPrime = 1; % index of the 1st reference to be set
 xPrime = [0; 0]; % initial state sampled at tK(kPrime)
-beta = 1;
+beta = 0;
 
 % trajectory to be followed
 %yTilde = @(t) sin(t).*exp(-2*t);
-yTilde = @(t) t.*t.*exp(-2*t);
-beta = 2; % discout factor of future costs
+%yTilde = @(t) t.*t.*exp(-2*t);
+%yTilde = @(t) t.*t;
+yTilde = @(t) t-t+1;  % step response
+beta = 0; % discout factor of future costs
 fprintf("Initial output gap: %f\n", C*xPrime-yTilde(tK(kPrime)));
 
 %% Intermediate matrices: Xtilde matrices depend on the trajectory
@@ -119,10 +121,11 @@ end
 r_opt = inv(Q_final)*(Xtilde_final'-V_final'*xPrime);
 
 %% Plotting target trajectory, references, and state trajectory
+hold off
+subplot(2,1,2);
 timespan = linspace(0,T,100);
 plot(timespan,yTilde(timespan),'b');  % target traj
 hold on
-stairs(tK,[r_opt' r_opt(end)],'r');   % refs
 
 %state trajectory
 xK = zeros(n,N+1);  % sampled state
@@ -138,4 +141,6 @@ for k=1:N
 end
 plot(tK,C*xK,'ko'); % plotting sampled states
 
-hold off
+hold off;
+subplot(2,1,1);
+stairs(tK,[r_opt' r_opt(end)],'r');   % refs
