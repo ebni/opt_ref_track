@@ -1,4 +1,4 @@
-function [r_opt] = opt_refs_PDcontrol_DBLint(lam1, lam2, x0, t0, N, tau, yTilde)
+function [r_opt, Q_final, grad_final] = opt_refs_PDcontrol_DBLint(lam1, lam2, x0, t0, N, tau, yTilde)
 %OPT_REFS_PDCONTROL_DBLINT Computes the optimal references of double int
 %   This function computes the optimal references of a double integrator
 %   controlled by a PD controller. Hence, the system is specifies by the
@@ -30,12 +30,13 @@ end
 if (m ~= 1)
 	disp("WARNING: the input/outputspace of double integrator has dimension 1")
 end
+fprintf("Initial output gap: %f\n", C*x0-yTilde(t0));
 
 %% Discout factor of future costs
 beta = 0;
 
 %% Instants and separations (in optimized versions to be simplified)
-tK = linspace(0,N*tau,N+1);
+tK = linspace(t0,t0+N*tau,N+1);
 tauK = diff(tK);
 
 %% Intermediate matrices: Xtilde matrices depend on the trajectory
@@ -119,5 +120,6 @@ end
 % subspaces along with Q has very small eigenvalues. In the quick and
 % dirt yworld, we just compute the solution
 
-r_opt = inv(Q_final)*(Xtilde_final'-V_final'*x0);
-
+grad_final = Xtilde_final-x0'*V_final;
+%r_opt = inv(Q_final)*(Xtilde_final'-V_final'*x0);
+r_opt = inv(Q_final)*grad_final';
