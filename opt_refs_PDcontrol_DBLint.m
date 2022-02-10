@@ -1,4 +1,4 @@
-function [r_opt, Q_final, grad_final] = opt_refs_PDcontrol_DBLint(lam1, lam2, x0, t0, N, tau, yTilde)
+function [r_opt, Q_final, lin_final] = opt_refs_PDcontrol_DBLint(lam1, lam2, x0, t0, N, tau, yTilde)
 %OPT_REFS_PDCONTROL_DBLINT Computes the optimal references of double int
 %   This function computes the optimal references of a double integrator
 %   controlled by a PD controller. Hence, the system is specifies by the
@@ -33,7 +33,7 @@ end
 fprintf("Initial output gap: %f\n", C*x0-yTilde(t0));
 
 %% Discout factor of future costs
-beta = 0;
+beta = -10;
 
 %% Instants and separations (in optimized versions to be simplified)
 tK = linspace(t0,t0+N*tau,N+1);
@@ -120,6 +120,6 @@ end
 % subspaces along with Q has very small eigenvalues. In the quick and
 % dirt yworld, we just compute the solution
 
-grad_final = Xtilde_final-x0'*V_final;
+lin_final = Xtilde_final-x0'*V_final;
 %r_opt = inv(Q_final)*(Xtilde_final'-V_final'*x0);
-r_opt = inv(Q_final)*grad_final';
+r_opt = inv(Q_final)*lin_final';
