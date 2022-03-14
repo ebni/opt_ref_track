@@ -9,6 +9,7 @@ tau = 0.1;   % period of references
 N = 10;      % number of intervals
 t0 = 0;
 x0 = [0; 0]; % initial sampled state
+x0 = [1; 0]; % @Enrico, state goes very large
 
 %% Trajectory to be followed
 % yTilde = @(t) sin(t).*exp(-2*t);
