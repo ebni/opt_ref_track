@@ -3,9 +3,10 @@ function [r_opt, Q_final, lin_final] = opt_refs_PDcontrol_DBLint(lam1, lam2, x0,
 %   This function computes the optimal references of a double integrator
 %   controlled by a PD controller. Hence, the system is specifies by the
 %   following parameters:
-%      lam1, lam2: proportional and derivative gains, respectively. From
-%         these values it follows that the matrix A is
-%         A=[0 1; -lam1*lam2 lam1+lam2]
+%      lam1, lam2: EIGENVALUES, not PD gains.
+% % % % % % % % % % %      lam1, lam2: proportional and derivative gains, respectively. From
+% % % % % % % % % % %         these values it follows that the matrix A is
+% % % % % % % % % % %         A=[0 1; -lam1*lam2 lam1+lam2]
 %      x0: sampled state at time t0
 %      t0: absolute instant from which references are needed
 %      N: number of references to be set

@@ -11,7 +11,7 @@ t0 = 0;
 x0 = [0; 0]; % initial sampled state
 
 %% Trajectory to be followed
-%yTilde = @(t) sin(t).*exp(-2*t);
+% yTilde = @(t) sin(t).*exp(-2*t);
 %yTilde = @(t) t.*t.*exp(-2*t);
 %yTilde = @(t) t.*t;
 yTilde = @(t) t-t+1;  % step response
