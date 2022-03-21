@@ -34,7 +34,7 @@ end
 fprintf("Initial output gap: %f\n", C*x0-yTilde(t0));
 
 %% Discout factor of future costs
-beta = -10;
+beta = 0;
 
 %% Instants and separations (in optimized versions to be simplified)
 tK = linspace(t0,t0+N*tau,N+1);
@@ -114,7 +114,7 @@ Q_final = zeros(m*N,m*N);
 for k=1:N
 	alpha_k = exp(-beta*(tK(k)-tK(1)));
 	Xtilde_final = Xtilde_final+alpha_k*Xtilde(:,:,k);
-	V_final = V_final+alpha_k+V(:,:,k);
+	V_final = V_final+alpha_k*V(:,:,k);
 	Q_final = Q_final+alpha_k*Q(:,:,k);
 end
 % in the real world, we should check the null space of Q and drop the
@@ -123,4 +123,4 @@ end
 
 lin_final = Xtilde_final-x0'*V_final;
 %r_opt = inv(Q_final)*(Xtilde_final'-V_final'*x0);
-r_opt = inv(Q_final)*lin_final';
+r_opt = Q_final\lin_final';

@@ -6,10 +6,10 @@ lam2=-2;
 
 %% Sampling
 tau = 0.1;   % period of references
-N = 10;      % number of intervals
+N = 20;      % number of intervals
 t0 = 0;
 x0 = [0; 0]; % initial sampled state
-x0 = [1; 0]; % @Enrico, state goes very large
+x0 = [10; 0]; % @Enrico, state goes very large
 
 %% Trajectory to be followed
 % yTilde = @(t) sin(t).*exp(-2*t);
@@ -35,8 +35,8 @@ sel = LL./max(LL) < gap;
 H_null = H(:,sel);
 H_good = H(:,not(sel));
 r_star = H_good*inv(diag(LL(not(sel))))*H_good'*lin_final';
-plot_PDcontrol_DBLint(lam1,lam2,x0,t0,N,tau,yTilde,r_star);
+%plot_PDcontrol_DBLint(lam1,lam2,x0,t0,N,tau,yTilde,r_star);
 
 %% Now plotting r_star+a vector in the null space
-plot_PDcontrol_DBLint(lam1,lam2,x0,t0,N,tau,yTilde,r_star+10*H_null*rand(sum(sel),1));
+%plot_PDcontrol_DBLint(lam1,lam2,x0,t0,N,tau,yTilde,r_star+10*H_null*rand(sum(sel),1));
 
