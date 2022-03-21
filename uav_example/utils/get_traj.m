@@ -9,7 +9,7 @@ function [ ts, ys ] = get_traj(lam1, lam2, x0, t0, N, tau, r)
         exp(lam2*t)-exp(lam1*t)];
     C = [1 0];
     
-    ts = []; ys = [];
+    ts = []; ys = []; states = [];
     xK = zeros(n,N+1);  % sampled state
     xK(:,1) = x0;
     tK = linspace(t0,t0+N*tau,N+1);

@@ -11,7 +11,7 @@ addpath('..');
 tau = 0.1;   % period of references
 N = 20;      % number of intervals
 t0 = 0;
-x0 = [0; 0; 0; 0]; % initial sampled state
+x0 = [0; 0; 3; 0]; % initial sampled state
 
 %% Dynamics 
 [sysd,sysc] = uav_dynamics();
