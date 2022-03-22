@@ -19,14 +19,19 @@ t0 = 0; % initial time
 x0 = [0; 0; 0; 0]; % initial sampled state
 
 %% Dynamics 
-[sysd,sysc] = uav_dynamics();
+[sysc,sysd] = uav_dynamics();
 
 %% Trajectory to be followed
-yTildex = @(t,px0,vx0) t+0.25; %sin(t.^2);
-yTildey = @(t,py0,vy0) t+0.25;
+yTildex = @(t) sin(t.^2)+t;
+yTildey = @(t) t+0.25;
 
 %% Initialize Variables and Plot
-
+close all;
+figure(1); hold on; grid on; axis equal; title("Time: 0.0 s");
+plt_xs = plot([0.0],[0.0],'LineWidth',2,'DisplayName','Actual Trajectory');
+plt_yTilde = plot([0.0],[0.0],'LineWidth',2,'DisplayName','Reference Trajectory');
+plt_future_xs = plot([0.0],[0.0],'LineWidth',2,'DisplayName','Future Trajectory');
+legend('Location','eastoutside');
 
 %% Simulate Receding Horizon Control
 steps = int16((simT-t0)/simdt);
@@ -48,27 +53,33 @@ for step = 1:steps
     [t_int,x_int] = ode45(@(t,x) EOM(t,sysc,x,r),[0 simdt],x);
     xs(:,step+1) = x_int(end,:)';
     rs(:,step) = r;
+    % Update plot
+    plt_xs.XData = xs(1,1:step); plt_xs.YData = xs(2,1:step);
+    plt_yTilde.XData = yTildex(y_opt.x.ts); plt_yTilde.YData = yTildey(y_opt.x.ts);
+    plt_future_xs.XData = y_opt.x.ys; plt_future_xs.YData = y_opt.y.ys;
+    drawnow;
 end
 
 %% Plot trajectory with Receding Horizon Controller
-close all;
-figure(1); hold on; grid on;
-plot(xs(1,:),xs(2,:),'LineWidth',2);
-plot(yTildex(times(1:end-1)),yTildey(times(1:end-1)),'LineWidth',2);
+% close all;
+figure(2); hold on; grid on; axis equal; title("Full Trajectory");
+plot(xs(1,:),xs(2,:),'LineWidth',2,'DisplayName','Actual Trajectory');
+plot(yTildex(times(1:end-1)),yTildey(times(1:end-1)),'LineWidth',2,'DisplayName','Reference Trajectory');
+legend('Location','eastoutside');
 
 %% Plot SINGLE MPC solution, not entire trajectory. Used for debugging purposes
 % Plot desired trajectory, optimal references and resulting trajectory
-close all;
-figure(1); hold on; grid on;
-plot(yTildex(y_opt.x.ts,0),yTildey(y_opt.y.ts,0),...
-    'DisplayName','Reference Trajectory',...
-    'LineWidth',2);
-plot(y_opt.x.ys,y_opt.y.ys,...
-    'DisplayName','Actual Trajectory',...
-    'LineWidth',2);
-% scatter(r_opt.x,r_opt.y);
-xlabel("X Position (m)"); ylabel("Y Position (m)");
-legend('Location','southeast');
+% close all;
+% figure(1); hold on; grid on;
+% plot(yTildex(y_opt.x.ts,0),yTildey(y_opt.y.ts,0),...
+%     'DisplayName','Reference Trajectory',...
+%     'LineWidth',2);
+% plot(y_opt.x.ys,y_opt.y.ys,...
+%     'DisplayName','Actual Trajectory',...
+%     'LineWidth',2);
+% % scatter(r_opt.x,r_opt.y);
+% xlabel("X Position (m)"); ylabel("Y Position (m)");
+% legend('Location','southeast');
 
 %% Aux Functions
 function sdot = EOM(t,sysc,x,r)
