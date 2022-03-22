@@ -10,11 +10,15 @@
 addpath('./utils');
 addpath('..');
 
+%% Flags
+filename = "example1";
+makeGifFlag = 1;
+
 %% Parameters
-tau = 0.1;   % Solver sampling time
+tau = 0.5;   % Solver sampling time
 predN = 20;      % Prediction horizon length
 simT = 5.0; % total simulation time
-simdt = 0.1; % Simulation sampling time
+simdt = 0.02; % Simulation sampling time
 t0 = 0; % initial time
 x0 = [0; 0; 0; 0]; % initial sampled state
 
@@ -27,11 +31,15 @@ yTildey = @(t) t+0.25;
 
 %% Initialize Variables and Plot
 close all;
-figure(1); hold on; grid on; axis equal; title("Time: 0.0 s");
-plt_xs = plot([0.0],[0.0],'LineWidth',2,'DisplayName','Actual Trajectory');
+figure(1); hold on; grid on; axis equal; title(sprintf("Waypoint Sample Freq: %0.1f Hz| Time: 0.0 s",1/tau)); xlim([0,6]); ylim([0,6]);
+plt_xs = plot([0.0],[0.0],'--','LineWidth',2,'DisplayName','Actual Trajectory');
 plt_yTilde = plot([0.0],[0.0],'LineWidth',2,'DisplayName','Reference Trajectory');
-plt_future_xs = plot([0.0],[0.0],'LineWidth',2,'DisplayName','Future Trajectory');
+plt_future_xs = plot([0.0],[0.0],'--','LineWidth',1,'DisplayName','Future Trajectory');
+plt_rob = scatter(0.0,0.0,'bo','filled','SizeData',50,'DisplayName','Current Position');
 legend('Location','eastoutside');
+if makeGifFlag
+    
+end
 
 %% Simulate Receding Horizon Control
 steps = int16((simT-t0)/simdt);
@@ -44,7 +52,7 @@ for step = 1:steps
     % Get current time and state
     t = times(step);
     x = xs(:,step);
-    if mod(step,stepsPerWypt)==0 % If time for a new waypoint
+    if mod(step-1,stepsPerWypt)==0 % If time for a new waypoint
         % Find optimal references + resulting trajectory
         [r_opt, y_opt, Q_final, lin_final] = opt_refs_uav(sysd, x, t, predN, tau, yTildex, yTildey);
         r = [r_opt.x(1);r_opt.y(1)];
@@ -54,10 +62,22 @@ for step = 1:steps
     xs(:,step+1) = x_int(end,:)';
     rs(:,step) = r;
     % Update plot
+    plt_rob.XData = xs(1,step); plt_rob.YData = xs(2,step);
     plt_xs.XData = xs(1,1:step); plt_xs.YData = xs(2,1:step);
     plt_yTilde.XData = yTildex(y_opt.x.ts); plt_yTilde.YData = yTildey(y_opt.x.ts);
     plt_future_xs.XData = y_opt.x.ys; plt_future_xs.YData = y_opt.y.ys;
+    title(sprintf("Waypoint Sample Freq: %0.1f Hz | Time: %0.2f",1/tau,t));
     drawnow;
+    if makeGifFlag
+        frame = getframe(gcf); 
+        im = frame2im(frame); 
+        [imind,cm] = rgb2ind(im,256);
+        if step==1
+            imwrite(imind,cm,filename+".gif",'gif', 'Loopcount',inf); 
+        else
+            imwrite(imind,cm,filename+".gif",'gif','WriteMode','append','DelayTime',simdt);
+        end
+    end
 end
 
 %% Plot trajectory with Receding Horizon Controller
