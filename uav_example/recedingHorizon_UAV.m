@@ -13,11 +13,21 @@ addpath('..');
 %% Flags
 filename = "example1";
 makeGifFlag = 1;
+scenario = 1; % Beta = 4 | Waypoint Freq = 10 Hz
+% scenario = 2; % Beta = 4 | Waypoint Freq = 4 Hz
+% scenario = 3; % Beta = 4 | Waypoint Freq = 2 Hz
 
 %% Parameters
-tau = 0.5;   % Solver sampling time
-predN = 20;      % Prediction horizon length
-simT = 5.0; % total simulation time
+T = 2; % Prediction Horizon time (s)
+if scenario==1
+    tau = 0.1;  % 10 Hz
+elseif scenario==2
+    tau = 0.25; % 4 Hz
+elseif scenario==3
+    tau = 0.5;  % 2 Hz
+end
+predN = T/tau;      % Prediction horizon length
+simT = 8.0; % total simulation time
 simdt = 0.02; % Simulation sampling time
 t0 = 0; % initial time
 x0 = [0; 0; 0; 0]; % initial sampled state
@@ -26,16 +36,17 @@ x0 = [0; 0; 0; 0]; % initial sampled state
 [sysc,sysd] = uav_dynamics();
 
 %% Trajectory to be followed
-yTildex = @(t) sin(t.^2)+t;
-yTildey = @(t) t+0.25;
+yTildex = @(t) 4*sin(t);
+yTildey = @(t) 2*sin(2*t);
 
 %% Initialize Variables and Plot
+cmap = gray(4);
 close all;
-figure(1); hold on; grid on; axis equal; title(sprintf("Waypoint Sample Freq: %0.1f Hz| Time: 0.0 s",1/tau)); xlim([0,6]); ylim([0,6]);
-plt_xs = plot([0.0],[0.0],'--','LineWidth',2,'DisplayName','Actual Trajectory');
-plt_yTilde = plot([0.0],[0.0],'LineWidth',2,'DisplayName','Reference Trajectory');
-plt_future_xs = plot([0.0],[0.0],'--','LineWidth',1,'DisplayName','Future Trajectory');
-plt_rob = scatter(0.0,0.0,'bo','filled','SizeData',50,'DisplayName','Current Position');
+figure(1); hold on; grid on; xlim([-4.2,4.2]); ylim([-2.3,2.3]); axis equal; title(sprintf("Waypoint Sample Freq: %0.1f Hz| Time: 0.0 s",1/tau)); 
+plt_yTilde = plot(yTildex(0:0.1:10),yTildey(0:0.1:10),'LineWidth',2,'DisplayName','Reference Trajectory','Color',[51 204 255]/255);
+plt_xs = plot([0.0],[0.0],'-','LineWidth',2,'DisplayName','Actual Trajectory','Color',cmap(scenario,:));
+plt_future_xs = plot([0.0],[0.0],'--','LineWidth',2.5,'DisplayName','Future Trajectory','Color',cmap(scenario,:));
+plt_rob = scatter(0.0,0.0,'ko','filled','SizeData',50,'DisplayName','Current Position','CData',cmap(scenario,:));
 legend('Location','eastoutside');
 if makeGifFlag
     
@@ -64,7 +75,7 @@ for step = 1:steps
     % Update plot
     plt_rob.XData = xs(1,step); plt_rob.YData = xs(2,step);
     plt_xs.XData = xs(1,1:step); plt_xs.YData = xs(2,1:step);
-    plt_yTilde.XData = yTildex(y_opt.x.ts); plt_yTilde.YData = yTildey(y_opt.x.ts);
+%     plt_yTilde.XData = yTildex(y_opt.x.ts); plt_yTilde.YData = yTildey(y_opt.x.ts);
     plt_future_xs.XData = y_opt.x.ys; plt_future_xs.YData = y_opt.y.ys;
     title(sprintf("Waypoint Sample Freq: %0.1f Hz | Time: %0.2f",1/tau,t));
     drawnow;
@@ -85,7 +96,7 @@ end
 figure(2); hold on; grid on; axis equal; title("Full Trajectory");
 plot(xs(1,:),xs(2,:),'LineWidth',2,'DisplayName','Actual Trajectory');
 plot(yTildex(times(1:end-1)),yTildey(times(1:end-1)),'LineWidth',2,'DisplayName','Reference Trajectory');
-legend('Location','eastoutside');
+legend('Location','south');
 
 %% Plot SINGLE MPC solution, not entire trajectory. Used for debugging purposes
 % Plot desired trajectory, optimal references and resulting trajectory

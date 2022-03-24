@@ -34,7 +34,7 @@ end
 fprintf("Initial output gap: %f\n", C*x0-yTilde(t0));
 
 %% Discout factor of future costs
-beta = 0;
+beta = -6;
 
 %% Instants and separations (in optimized versions to be simplified)
 tK = linspace(t0,t0+N*tau,N+1);
