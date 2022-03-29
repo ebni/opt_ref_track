@@ -13,9 +13,9 @@ addpath('..');
 %% Flags
 filename = "example1";
 makeGifFlag = 1;
-scenario = 1; % Beta = 4 | Waypoint Freq = 10 Hz
+% scenario = 1; % Beta = 4 | Waypoint Freq = 10 Hz
 % scenario = 2; % Beta = 4 | Waypoint Freq = 4 Hz
-% scenario = 3; % Beta = 4 | Waypoint Freq = 2 Hz
+scenario = 3; % Beta = 4 | Waypoint Freq = 2 Hz
 
 %% Parameters
 T = 2; % Prediction Horizon time (s)
@@ -42,12 +42,13 @@ yTildey = @(t) 2*sin(2*t);
 %% Initialize Variables and Plot
 cmap = gray(4);
 close all;
-figure(1); hold on; grid on; xlim([-4.2,4.2]); ylim([-2.3,2.3]); axis equal; title(sprintf("Waypoint Sample Freq: %0.1f Hz| Time: 0.0 s",1/tau)); 
-plt_yTilde = plot(yTildex(0:0.1:10),yTildey(0:0.1:10),'LineWidth',2,'DisplayName','Reference Trajectory','Color',[51 204 255]/255);
-plt_xs = plot([0.0],[0.0],'-','LineWidth',2,'DisplayName','Actual Trajectory','Color',cmap(scenario,:));
-plt_future_xs = plot([0.0],[0.0],'--','LineWidth',2.5,'DisplayName','Future Trajectory','Color',cmap(scenario,:));
-plt_rob = scatter(0.0,0.0,'ko','filled','SizeData',50,'DisplayName','Current Position','CData',cmap(scenario,:));
-legend('Location','eastoutside');
+figure(1); hold on; box on; grid on; xlim([-4.2,4.2]); ylim([-2.3,2.3]); axis equal; set(gca,'FontSize',20,'FontName','Times New Roman');
+title(sprintf("Waypoint Sample Freq: %0.1f Hz| Time: 0.0 s",1/tau)); 
+plt_yTilde = plot(yTildex(0:0.1:10),yTildey(0:0.1:10),'LineWidth',2,'DisplayName','$\tilde{y}(t)$','Color',[51 204 255]/255);
+plt_xs = plot([0.0],[0.0],'-','LineWidth',2,'DisplayName','$y(t)$','Color',cmap(scenario,:));
+plt_future_xs = plot([0.0],[0.0],'--','LineWidth',2.5,'DisplayName','Receding Horizon','Color',cmap(scenario,:));
+plt_rob = scatter(0.0,0.0,'ko','filled','SizeData',80,'DisplayName','Current $y$','CData',cmap(scenario,:));
+legend([plt_yTilde,plt_xs,plt_future_xs],'Location','south','Interpreter','latex','FontSize',13);
 if makeGifFlag
     
 end
@@ -59,6 +60,7 @@ xs = zeros(size(x0,1),steps); rs = zeros(2,steps);
 times = 0:simdt:simT;
 xs(:,1) = x0;
 r = x0(1:2,:); % Applied waypoint
+es = zeros(1,steps); % Error between y(t) and \tilde{y}(t)
 for step = 1:steps
     % Get current time and state
     t = times(step);
@@ -72,6 +74,8 @@ for step = 1:steps
     [t_int,x_int] = ode45(@(t,x) EOM(t,sysc,x,r),[0 simdt],x);
     xs(:,step+1) = x_int(end,:)';
     rs(:,step) = r;
+    % Get error between target trajectory and actual trajectory
+    es(step) = norm(xs(1:2,step)-[yTildex(t);yTildey(t)]);
     % Update plot
     plt_rob.XData = xs(1,step); plt_rob.YData = xs(2,step);
     plt_xs.XData = xs(1,1:step); plt_xs.YData = xs(2,1:step);
@@ -91,12 +95,14 @@ for step = 1:steps
     end
 end
 
+%% Save data for plotting
+save(sprintf('./data/scenario%d',scenario),'es','times');
+
 %% Plot trajectory with Receding Horizon Controller
 % close all;
 figure(2); hold on; grid on; axis equal; title("Full Trajectory");
 plot(xs(1,:),xs(2,:),'LineWidth',2,'DisplayName','Actual Trajectory');
 plot(yTildex(times(1:end-1)),yTildey(times(1:end-1)),'LineWidth',2,'DisplayName','Reference Trajectory');
-legend('Location','south');
 
 %% Plot SINGLE MPC solution, not entire trajectory. Used for debugging purposes
 % Plot desired trajectory, optimal references and resulting trajectory
