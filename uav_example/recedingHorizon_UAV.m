@@ -15,8 +15,8 @@ filename = "recedingHorizon";
 makeGifFlag = 0;
 makeVideoFlag = 1;
 % scenario = 1; % Beta = 4 | Waypoint Freq = 10 Hz
-% scenario = 2; % Beta = 4 | Waypoint Freq = 4 Hz
-scenario = 3; % Beta = 4 | Waypoint Freq = 2 Hz
+scenario = 2; % Beta = 4 | Waypoint Freq = 4 Hz
+% scenario = 3; % Beta = 4 | Waypoint Freq = 2 Hz
 
 %% Parameters
 T = 2; % Prediction Horizon time (s)
@@ -44,7 +44,8 @@ yTildey = @(t) 2*sin(2*t);
 cmap = gray(4);
 linesCmap = lines(4);
 close all;
-figure(1); hold on; grid on; xlim([-4.2,4.2]); ylim([-2.3,2.3]); axis equal; title(sprintf("$\\tau: %0.1f$ s $|$ Time: 0.0 s",tau),"Interpreter","latex"); 
+figure(1); hold on; grid on; xlim([-4.2,4.2]); ylim([-2.3,2.3]); axis equal; title(sprintf("$\\tau: %0.1f$ s $|$ Time: 0.0 s",tau),"Interpreter","latex");
+xlabel("X Position (m)","Interpreter","latex"); ylabel("Y Position (m)","Interpreter","latex");
 % plt_yTilde = plot(yTildex(0:0.1:10),yTildey(0:0.1:10),'LineWidth',2,'DisplayName','Reference Trajectory','Color',[51 204 255]/255); % For figure
 plt_yTilde = plot(yTildex(0:0.1:10),yTildey(0:0.1:10),'LineWidth',2,'DisplayName','Reference Trajectory','Color',[51 204 255]/255); % For video
 plt_xs = plot([0.0],[0.0],'-','LineWidth',2,'DisplayName','Actual Trajectory','Color',cmap(scenario,:));
@@ -102,6 +103,7 @@ for step = 1:steps
         end
     end
     if makeVideoFlag
+        xlim([-4.2,4.2]); ylim([-2.3,2.3]);
         frame = getframe(gcf);
         writeVideo(writerObj,frame);
     end
