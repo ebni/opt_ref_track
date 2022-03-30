@@ -68,6 +68,7 @@ xs = zeros(size(x0,1),steps); rs = zeros(2,steps);
 times = 0:simdt:simT;
 xs(:,1) = x0;
 r = x0(1:2,:); % Applied waypoint
+es = zeros(1,steps); % Error between y(t) and \tilde{y}(t)
 for step = 1:steps
     % Get current time and state
     t = times(step);
@@ -81,6 +82,8 @@ for step = 1:steps
     [t_int,x_int] = ode45(@(t,x) EOM(t,sysc,x,r),[0 simdt],x);
     xs(:,step+1) = x_int(end,:)';
     rs(:,step) = r;
+    % Get error between target trajectory and actual trajectory
+    es(step) = norm(xs(1:2,step)-[yTildex(t);yTildey(t)]);
     % Update plot
     plt_rob.XData = xs(1,step); plt_rob.YData = xs(2,step);
     plt_xs.XData = xs(1,1:step); plt_xs.YData = xs(2,1:step);
@@ -107,12 +110,14 @@ if makeVideoFlag
     close(writerObj);
 end
 
+%% Save data for plotting
+save(sprintf('./data/scenario%d',scenario),'es','times');
+
 %% Plot trajectory with Receding Horizon Controller
 % close all;
 figure(2); hold on; grid on; axis equal; title("Full Trajectory");
 plot(xs(1,:),xs(2,:),'LineWidth',2,'DisplayName','Actual Trajectory');
 plot(yTildex(times(1:end-1)),yTildey(times(1:end-1)),'LineWidth',2,'DisplayName','Reference Trajectory');
-legend('Location','south');
 
 %% Plot SINGLE MPC solution, not entire trajectory. Used for debugging purposes
 % Plot desired trajectory, optimal references and resulting trajectory
