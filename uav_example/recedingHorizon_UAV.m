@@ -11,11 +11,12 @@ addpath('./utils');
 addpath('..');
 
 %% Flags
-filename = "example1";
-makeGifFlag = 1;
-scenario = 1; % Beta = 4 | Waypoint Freq = 10 Hz
+filename = "recedingHorizon";
+makeGifFlag = 0;
+makeVideoFlag = 1;
+% scenario = 1; % Beta = 4 | Waypoint Freq = 10 Hz
 % scenario = 2; % Beta = 4 | Waypoint Freq = 4 Hz
-% scenario = 3; % Beta = 4 | Waypoint Freq = 2 Hz
+scenario = 3; % Beta = 4 | Waypoint Freq = 2 Hz
 
 %% Parameters
 T = 2; % Prediction Horizon time (s)
@@ -41,15 +42,23 @@ yTildey = @(t) 2*sin(2*t);
 
 %% Initialize Variables and Plot
 cmap = gray(4);
+linesCmap = lines(4);
 close all;
-figure(1); hold on; grid on; xlim([-4.2,4.2]); ylim([-2.3,2.3]); axis equal; title(sprintf("Waypoint Sample Freq: %0.1f Hz| Time: 0.0 s",1/tau)); 
-plt_yTilde = plot(yTildex(0:0.1:10),yTildey(0:0.1:10),'LineWidth',2,'DisplayName','Reference Trajectory','Color',[51 204 255]/255);
+figure(1); hold on; grid on; xlim([-4.2,4.2]); ylim([-2.3,2.3]); axis equal; title(sprintf("$\\tau: %0.1f$ s $|$ Time: 0.0 s",tau),"Interpreter","latex"); 
+% plt_yTilde = plot(yTildex(0:0.1:10),yTildey(0:0.1:10),'LineWidth',2,'DisplayName','Reference Trajectory','Color',[51 204 255]/255); % For figure
+plt_yTilde = plot(yTildex(0:0.1:10),yTildey(0:0.1:10),'LineWidth',2,'DisplayName','Reference Trajectory','Color',[51 204 255]/255); % For video
 plt_xs = plot([0.0],[0.0],'-','LineWidth',2,'DisplayName','Actual Trajectory','Color',cmap(scenario,:));
-plt_future_xs = plot([0.0],[0.0],'--','LineWidth',2.5,'DisplayName','Future Trajectory','Color',cmap(scenario,:));
+% plt_future_xs = plot([0.0],[0.0],'--','LineWidth',2.5,'DisplayName','Future Trajectory','Color',cmap(scenario,:)); % For figure
+plt_future_xs = plot([0.0],[0.0],'--','LineWidth',2.5,'DisplayName','Future Trajectory','Color',linesCmap(2,:)); % For video
 plt_rob = scatter(0.0,0.0,'ko','filled','SizeData',50,'DisplayName','Current Position','CData',cmap(scenario,:));
 legend('Location','eastoutside');
 if makeGifFlag
     
+end
+if makeVideoFlag
+    writerObj = VideoWriter(filename+sprintf("%0.0f",1/tau)+"Hz","MPEG-4");
+    writerObj.FrameRate = 1/simdt;
+    open(writerObj);
 end
 
 %% Simulate Receding Horizon Control
@@ -77,7 +86,7 @@ for step = 1:steps
     plt_xs.XData = xs(1,1:step); plt_xs.YData = xs(2,1:step);
 %     plt_yTilde.XData = yTildex(y_opt.x.ts); plt_yTilde.YData = yTildey(y_opt.x.ts);
     plt_future_xs.XData = y_opt.x.ys; plt_future_xs.YData = y_opt.y.ys;
-    title(sprintf("Waypoint Sample Freq: %0.1f Hz | Time: %0.2f",1/tau,t));
+    title(sprintf("$\\tau: %0.1f$ s $|$  Time: %0.2f",tau,t));
     drawnow;
     if makeGifFlag
         frame = getframe(gcf); 
@@ -89,6 +98,13 @@ for step = 1:steps
             imwrite(imind,cm,filename+".gif",'gif','WriteMode','append','DelayTime',simdt);
         end
     end
+    if makeVideoFlag
+        frame = getframe(gcf);
+        writeVideo(writerObj,frame);
+    end
+end
+if makeVideoFlag
+    close(writerObj);
 end
 
 %% Plot trajectory with Receding Horizon Controller
