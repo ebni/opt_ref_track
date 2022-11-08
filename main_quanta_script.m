@@ -24,6 +24,7 @@ title('Trajectory');
 xlabel('X coordinate');
 ylabel('Y coordinate');
 hold off;
+axis equal;
 
 % trajectory over time
 figure(2);
