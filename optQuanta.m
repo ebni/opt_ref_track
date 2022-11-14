@@ -28,7 +28,7 @@ tK = linspace(0,t_f, N+1);
 Uvec = zeros(size(uOpt(0),1),N);
 
 iter=1;
-while (iter <= 100)     % STOP CONDITION (1): too many iterations
+while (iter <= 1000)     % STOP CONDITION (1): too many iterations
 
 	% Computing averages
 	for k=1:N

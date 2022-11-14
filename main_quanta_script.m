@@ -1,8 +1,8 @@
 %% INPUT
 y = @(t) [cos(0.5.*t)+cos(0.2.*t); sin(1.1.*t)+sin(t)];     % trajectory
 %y = @(t) [t; t.*t];     % trajectory
-t_f = 8;  % final instant
-N = 16;    % number of sampling instants
+t_f = 10;  % final instant
+N = 200;    % number of sampling instants
 
 %% Processing
 p_size = size(y(0),1);
@@ -10,7 +10,8 @@ p_size = size(y(0),1);
 [tK, refs, minCost] = optQuanta(y, N, t_f);
 
 %% Plotting
-t=[0:0.01:t_f];
+delta_t = 0.01;
+t=[0:delta_t:t_f];
 y(t);
 
 % trajectory in 2D
@@ -40,3 +41,11 @@ for i=1:p_size
 	xlabel('time');
 	hold off;
 end
+
+% density
+figure(3);
+for k=1:N
+	plot([tK(k) tK(k+1)], [1 1]./(N*(tK(k+1)-tK(k))), 'r-','LineWidth',2);
+	hold on;
+end
+hold off;

@@ -12,7 +12,7 @@ x0 = [0; 0]; % initial sampled state
 
 %% Trajectory to be followed
 yTilde = @(t) t-t+1;  % step response
-yTilde = @(t) (.5*(1-cos(2*pi*t))).^8;  % follow cos
+%yTilde = @(t) (.5*(1-cos(2*pi*t))).^8;  % follow cos
 
 close all;
 figure;
@@ -52,8 +52,8 @@ tK = linspace(t0,t0+N*tau,N+1);
 stairs(tK,[r_opt' r_opt(end)],'LineWidth',2,'Color',.4*[1 1 1]);   % refs
 
 %% Get optimal references and plot
-tau = 0.05;   % period of references
-N = 20;      % number of intervals
+tau = 0.04;   % period of references
+N = 25;      % number of intervals
 [r_opt, Q_final, lin_final] = opt_refs_PDcontrol_DBLint(lam1,lam2,x0,t0,N,tau,yTilde, 0);
 [output_x, output_y] = output_PDcontrol_DBLint(lam1,lam2,x0,t0,N,tau,r_opt);
 subplot(2,1,1);
@@ -63,6 +63,18 @@ hold on;
 tK = linspace(t0,t0+N*tau,N+1);
 stairs(tK,[r_opt' r_opt(end)],'LineWidth',2,'Color',.6*[1 1 1]);   % refs
 
-
 subplot(2,1,2);
-legend('\tau=0.2, N=5','\tau=0.1, N=10','\tau =0.05, N=20','Location','southeast')
+legend('\tau=0.2, N=5','\tau=0.1, N=10','\tau =0.04, N=25','Location','southeast')
+
+%% ylim With cosine
+%subplot(2,1,1);
+%ylim([-0.2 1]);
+%subplot(2,1,2);
+%ylim([-100 75]);
+
+
+%% ylim With step
+subplot(2,1,1);
+ylim([-0.1 1.4]);
+subplot(2,1,2);
+ylim([-700 500]);

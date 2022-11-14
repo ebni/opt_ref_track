@@ -13,7 +13,7 @@ addpath('..');
 %% Flags
 filename = "recedingHorizon";
 makeGifFlag = 0;
-makeVideoFlag = 1;
+makeVideoFlag = 0;
 % scenario = 1; % Beta = 4 | Waypoint Freq = 10 Hz
 scenario = 2; % Beta = 4 | Waypoint Freq = 4 Hz
 % scenario = 3; % Beta = 4 | Waypoint Freq = 2 Hz
