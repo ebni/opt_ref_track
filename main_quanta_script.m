@@ -50,6 +50,8 @@ for k=1:N
 	hold on;
 end
 hold off;
+xlabel('time');
+ylabel('density');
 
 
 % Plotting the derivative of y(t)
@@ -59,3 +61,5 @@ norm_yd = vecnorm(yd(tK),1,1);
 
 subplot(212);
 plot(tK,norm_yd.^(2/3));
+xlabel('time');
+ylabel('$\|\dot y(t)\|^{2/3}$','Interpreter','latex');
