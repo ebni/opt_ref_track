@@ -42,10 +42,20 @@ for i=1:p_size
 	hold off;
 end
 
-% density
+%% density
 figure(3);
+subplot(211);
 for k=1:N
 	plot([tK(k) tK(k+1)], [1 1]./(N*(tK(k+1)-tK(k))), 'r-','LineWidth',2);
 	hold on;
 end
 hold off;
+
+
+% Plotting the derivative of y(t)
+syms x
+yd = eval(['@(x)' char(diff(y(x)))]);
+norm_yd = vecnorm(yd(tK),1,1);
+
+subplot(212);
+plot(tK,norm_yd.^(2/3));
