@@ -8,7 +8,7 @@ addpath('../uav_example/utils');
 addpath('..');
 
 %% Parameters
-T = 10;
+T = 5;
 tau = 0.1;   % period of references
 t0 = 0;
 x0 = [0; 0; 0; 0]; % initial sampled state
@@ -43,7 +43,7 @@ plot(r(1,:),r(2,:),...
 plot(x(1,:),x(2,:),...
    'DisplayName','Actual Trajectory',...
    'LineWidth',2);
-%scatter(r_opt.x,r_opt.y);
+scatter(r(1,:),r(2,:),'filled','DisplayName','Reference waypoints');
 xlabel("X Position (m)"); ylabel("Y Position (m)");
 legend('Location','southeast');
 
