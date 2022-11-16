@@ -1,5 +1,5 @@
 %% This file describes the dynamics used in the submitted ACC 2022 paper under review
-function [sysc,sysd] = uav_dynamics()
+function [sysc,sysd] = uav_dynamics(dt)
 % Our model is a simple double-integrator with PD controller, to
 % approximate the inertial characeteristics of the UAV.
 
@@ -27,7 +27,9 @@ function [sysc,sysd] = uav_dynamics()
 % ddt( y_dot ) = -kp*y -kv*ydot + kp*y_w
 
 % Constants
+if nargin < 1
 dt = 0.1;
+end
 kp = 0.5; % PD proportional gain
 kv = 1.5; % PD derivative gain
 
