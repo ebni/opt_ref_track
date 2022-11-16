@@ -57,7 +57,7 @@ ylabel('density');
 % Plotting the derivative of y(t)
 syms x
 yd = eval(['@(x)' char(diff(y(x)))]);
-norm_yd = vecnorm(yd(tK),1,1);
+norm_yd = vecnorm(yd(tK),2,1);
 
 subplot(212);
 plot(tK,norm_yd.^(2/3));

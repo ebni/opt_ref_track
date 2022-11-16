@@ -14,7 +14,7 @@ t0 = 0;
 x0 = [0; 0; 3; 0]; % initial sampled state
 
 %% Dynamics 
-[sysd,sysc] = uav_dynamics();
+[sysc,sysd] = uav_dynamics();
 
 %% Trajectory to be followed
 yTildex = @(t) sin(6*t.^2)+t;
