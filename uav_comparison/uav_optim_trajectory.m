@@ -8,19 +8,22 @@ addpath('../uav_example/utils');
 addpath('..');
 
 %% Parameters
-T = 5;
+T = 2*pi;
 tau = 0.1;   % period of references
 N = round(T/tau);      % number of intervals
 t0 = 0;
-x0 = [-0.1; -0.1; 0; 0]; % initial sampled state
+x0 = [0; 0; 1; 1]; % initial sampled state
 beta = 0;   % Discount factor
 
 %% Dynamics 
 [sysc,sysd] = uav_dynamics();
 
 %% Trajectory to be followed
-yTildex = @(t) chicane_x(t);
-yTildey = @(t) chicane_y(t);
+% yTildex = @(t) chicane_x(t);
+% yTildey = @(t) chicane_y(t);
+
+yTildex = @(t) t;
+yTildey = @(t) sin(t);
 
 %% Get optimal references (waypoints) in both x and y directions
 [r_opt, y_opt, Q_final, lin_final] = opt_refs_uav(sysd, x0, t0, N, tau, yTildex, yTildey, beta);
@@ -34,7 +37,7 @@ plot(yTildex(y_opt.x.ts),yTildey(y_opt.y.ts),...
 plot(y_opt.x.ys,y_opt.y.ys,...
    'DisplayName','Actual Trajectory',...
    'LineWidth',2);
-%scatter(r_opt.x,r_opt.y);
+scatter(r_opt.x,r_opt.y,'filled');
 xlabel("X Position (m)"); ylabel("Y Position (m)");
 legend('Location','southeast');
 

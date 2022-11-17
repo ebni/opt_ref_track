@@ -30,8 +30,8 @@ function [sysc,sysd] = uav_dynamics(dt)
 if nargin < 1
 dt = 0.1;
 end
-kp = 0.5; % PD proportional gain
-kv = 1.5; % PD derivative gain
+kp = 4.5; % PD proportional gain
+kv = 2.5; % PD derivative gain
 
 % Continuous time dynamics
 % State = (x, y, xdot, ydot)
