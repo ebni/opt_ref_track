@@ -11,8 +11,8 @@ t0 = 0;
 x0 = [0; 0]; % initial sampled state
 
 %% Trajectory to be followed
-yTilde = @(t) t-t+1;  % step response
-%yTilde = @(t) (.5*(1-cos(2*pi*t))).^8;  % follow cos
+%yTilde = @(t) t-t+1;  % step response
+yTilde = @(t) (.5*(1-cos(2*pi*t))).^8;  % follow cos
 
 close all;
 figure;
@@ -74,7 +74,7 @@ legend('\tau=0.2, N=5','\tau=0.1, N=10','\tau =0.04, N=25','Location','southeast
 
 
 %% ylim With step
-subplot(2,1,1);
-ylim([-0.1 1.4]);
-subplot(2,1,2);
-ylim([-700 500]);
+%subplot(2,1,1);
+%ylim([-0.1 1.4]);
+%subplot(2,1,2);
+%ylim([-700 500]);

@@ -52,35 +52,45 @@ x_optim   = lsim(sysc,r_optim,t,x0);
 %% Plot desired trajectory, optimal references and resulting trajectory
 %close all;
 figure(1); clf; 
-subplot(121);
+%subplot(121);
 hold on; grid on;
 title('Sampled reference');
 plot(yTildex(t),yTildey(t),...
     'DisplayName','Reference Trajectory',...
-    'LineWidth',2);
+    'LineWidth',3,'Color','b');
 plot(x_sampled(:,1),x_sampled(:,2),...
    'DisplayName','Actual Trajectory',...
-   'LineWidth',2);
+   'LineWidth',3,'Color','k');
 scatter(r_sampled(1,:),r_sampled(2,:),'filled',...
     'DisplayName','Waypoints');
 xlabel("X Position (m)"); ylabel("Y Position (m)");
-legend('Location','southeast');
-
+legend('Location','northeast');
 xlim([0,T+tau]);
 ylim([-1.5,1.5]);
+% adapting to size of figure
+my_fig = gcf;
+my_fig.PaperUnits='centimeters';
+my_fig.PaperSize = [14 11];
+print('waypoint_sampled.pdf','-dpdf')
 
-subplot(122);
+figure(2); clf;
+%subplot(122);
 hold on; grid on;
 title('Optimized waypoints');
 plot(yTildex(t),yTildey(t),...
     'DisplayName','Reference Trajectory',...
-    'LineWidth',2);
+    'LineWidth',3,'Color','b');
 plot(x_optim(:,1),x_optim(:,2),...
    'DisplayName','Actual Trajectory',...
-   'LineWidth',2);
+   'LineWidth',3,'Color','k');
 scatter(r_optim(1,:),r_optim(2,:),'filled',...
     'DisplayName','Waypoints');
 xlabel("X Position (m)"); ylabel("Y Position (m)");
-legend('Location','southeast');
+legend('Location','northeast');
 xlim([0,T+tau]);
 ylim([-1.5,1.5]);
+% adapting to size of figure
+my_fig = gcf;
+my_fig.PaperUnits='centimeters';
+my_fig.PaperSize = [14 11];
+print('waypoint_optimal.pdf','-dpdf')
